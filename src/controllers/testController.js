@@ -273,3 +273,83 @@ export const searchModels = async (req, res) => {
     res.status(500).json({ error: 'Failed to search models' });
   }
 };
+// @desc    Get available MR types
+// @route   GET /api/tests/mr-types
+export const getMRTypes = async (req, res) => {
+  try {
+    // Static list - but easily modifiable
+    const mrTypes = [
+      { 
+        value: 'SYNONYM', 
+        label: 'Synonym Replacement', 
+        description: 'Tests semantic consistency by replacing words with synonyms',
+        icon: '🔄',
+        color: 'blue',
+        category: 'semantic'
+      },
+      { 
+        value: 'GENDER_SWAP', 
+        label: 'Gender Swap', 
+        description: 'Fairness & bias check by swapping gender-specific terms',
+        icon: '⚥',
+        color: 'purple',
+        category: 'fairness'
+      },
+      { 
+        value: 'PUNCTUATION', 
+        label: 'Punctuation Perturbation', 
+        description: 'Robustness check by modifying punctuation',
+        icon: '❗',
+        color: 'yellow',
+        category: 'robustness'
+      },
+      { 
+        value: 'NEGATION', 
+        label: 'Negation', 
+        description: 'Logical consistency by adding/removing negation',
+        icon: '🚫',
+        color: 'red',
+        category: 'logical'
+      },
+      { 
+        value: 'PARAPHRASE', 
+        label: 'Paraphrase', 
+        description: 'Semantic invariance through rephrasing',
+        icon: '📝',
+        color: 'green',
+        category: 'semantic'
+      },
+      // Naye MR types yahan add karo
+      { 
+        value: 'TENSE_CHANGE', 
+        label: 'Tense Change', 
+        description: 'Tests if model understands past/present/future tense',
+        icon: '⏰',
+        color: 'orange',
+        category: 'grammar'
+      },
+      { 
+        value: 'TYPO_CORRECTION', 
+        label: 'Typo Correction', 
+        description: 'Tests robustness to spelling mistakes',
+        icon: '✏️',
+        color: 'pink',
+        category: 'robustness'
+      }
+    ];
+    
+    // Filter by category if needed
+    const { category } = req.query;
+    let filteredTypes = mrTypes;
+    if (category) {
+      filteredTypes = mrTypes.filter(type => type.category === category);
+    }
+    
+    res.json({
+      success: true,
+      data: filteredTypes
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch MR types' });
+  }
+};

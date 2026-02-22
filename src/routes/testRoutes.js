@@ -4,7 +4,8 @@ import {
   getResults,
   getAnalytics,
   getModels,
-  searchModels  // Add this import
+  searchModels,
+  getMRTypes  
 } from '../controllers/testController.js';
 
 const router = express.Router();
@@ -13,6 +14,7 @@ router.post('/run', runTest);
 router.get('/results', getResults);
 router.get('/analytics', getAnalytics);
 router.get('/models', getModels);
-router.get('/search-models', searchModels);  // Add this route
+router.get('/search-models', searchModels);
+router.get('/mr-types', getMRTypes);  
 
 export default router;
