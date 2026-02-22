@@ -5,7 +5,7 @@ import {
   getAnalytics,
   getModels,
   searchModels,
-  getMRTypes  
+  getMRTypes  // 👈 Naya import
 } from '../controllers/testController.js';
 
 const router = express.Router();
@@ -15,6 +15,6 @@ router.get('/results', getResults);
 router.get('/analytics', getAnalytics);
 router.get('/models', getModels);
 router.get('/search-models', searchModels);
-router.get('/mr-types', getMRTypes);  
+router.get('/mr-types', getMRTypes);  // 👈 Naya route
 
 export default router;

@@ -3,10 +3,148 @@ import * as metamorphicRules from '../utils/metamorphicRules.js';
 import { 
   queryModel, 
   getAvailableModels,
-  getModels as getDynamicModels,  // Renamed this import to avoid conflict
+  getModels as getDynamicModels,
   searchHuggingFaceModels,
   getModelsByTask 
 } from '../services/huggingFaceService.js';
+
+// @desc    Get available MR types
+// @route   GET /api/tests/mr-types
+export const getMRTypes = async (req, res) => {
+  try {
+    // ✅ YAHAN NAYE MR TYPES ADD KARO
+    const mrTypes = [
+      { 
+        value: 'SYNONYM', 
+        label: 'Synonym Replacement', 
+        description: 'Tests semantic consistency by replacing words with synonyms',
+        icon: '🔄',
+        color: 'blue',
+        category: 'semantic'
+      },
+      { 
+        value: 'GENDER_SWAP', 
+        label: 'Gender Swap', 
+        description: 'Fairness & bias check by swapping gender-specific terms',
+        icon: '⚥',
+        color: 'purple',
+        category: 'fairness'
+      },
+      { 
+        value: 'PUNCTUATION', 
+        label: 'Punctuation Perturbation', 
+        description: 'Robustness check by modifying punctuation',
+        icon: '❗',
+        color: 'yellow',
+        category: 'robustness'
+      },
+      { 
+        value: 'NEGATION', 
+        label: 'Negation', 
+        description: 'Logical consistency by adding/removing negation',
+        icon: '🚫',
+        color: 'red',
+        category: 'logical'
+      },
+      { 
+        value: 'PARAPHRASE', 
+        label: 'Paraphrase', 
+        description: 'Semantic invariance through rephrasing',
+        icon: '📝',
+        color: 'green',
+        category: 'semantic'
+      },
+      // 👇 NAYE MR TYPES YAHAN ADD KARO
+      { 
+        value: 'TYPO_CORRECTION', 
+        label: 'Typo Correction', 
+        description: 'Tests robustness to spelling mistakes by introducing common typos',
+        icon: '✏️',
+        color: 'pink',
+        category: 'robustness'
+      },
+      { 
+        value: 'TENSE_CHANGE', 
+        label: 'Tense Change', 
+        description: 'Tests if model understands past/present/future tense changes',
+        icon: '⏰',
+        color: 'orange',
+        category: 'grammar'
+      },
+      { 
+        value: 'CAPITALIZATION', 
+        label: 'Capitalization', 
+        description: 'Tests if case sensitivity affects model output',
+        icon: '🔠',
+        color: 'indigo',
+        category: 'robustness'
+      },
+      { 
+        value: 'CONTRACTION_EXPANSION', 
+        label: 'Contraction Expansion', 
+        description: 'Tests if contractions vs full forms affect sentiment (e.g., "don\'t" vs "do not")',
+        icon: '📎',
+        color: 'teal',
+        category: 'grammar'
+      },
+      { 
+        value: 'NUMBER_TO_WORD', 
+        label: 'Number to Word', 
+        description: 'Tests if numeric vs written numbers affect sentiment (e.g., "5" vs "five")',
+        icon: '🔢',
+        color: 'amber',
+        category: 'robustness'
+      },
+      { 
+        value: 'EMOJI_REMOVAL', 
+        label: 'Emoji Removal', 
+        description: 'Tests if removing emojis affects sentiment',
+        icon: '😊',
+        color: 'yellow',
+        category: 'robustness'
+      },
+      { 
+        value: 'REPETITION', 
+        label: 'Repetition', 
+        description: 'Tests if word repetition affects sentiment (e.g., "very very good")',
+        icon: '🔁',
+        color: 'cyan',
+        category: 'semantic'
+      },
+      { 
+        value: 'FORMAL_TO_INFORMAL', 
+        label: 'Formal to Informal', 
+        description: 'Tests if formality level affects sentiment',
+        icon: '👔',
+        color: 'slate',
+        category: 'style'
+      },
+      { 
+        value: 'ACTIVE_TO_PASSIVE', 
+        label: 'Active to Passive', 
+        description: 'Tests if voice change affects sentiment',
+        icon: '🔄',
+        color: 'violet',
+        category: 'grammar'
+      }
+    ];
+    
+    // Optional: Filter by category
+    const { category } = req.query;
+    let filteredTypes = mrTypes;
+    if (category) {
+      filteredTypes = mrTypes.filter(type => type.category === category);
+    }
+    
+    res.json({
+      success: true,
+      data: filteredTypes
+    });
+  } catch (error) {
+    console.error('Error fetching MR types:', error);
+    res.status(500).json({ error: 'Failed to fetch MR types' });
+  }
+};
 
 // @desc    Run a metamorphic test
 // @route   POST /api/tests/run
@@ -35,6 +173,34 @@ export const runTest = async (req, res) => {
         break;
       case 'PARAPHRASE':
         followupInput = metamorphicRules.applyParaphrase(sourceInput);
+        break;
+      // 👇 NAYE MR TYPES KE CASES
+      case 'TYPO_CORRECTION':
+        followupInput = metamorphicRules.applyTypoCorrection(sourceInput);
+        break;
+      case 'TENSE_CHANGE':
+        followupInput = metamorphicRules.applyTenseChange(sourceInput);
+        break;
+      case 'CAPITALIZATION':
+        followupInput = metamorphicRules.applyCapitalizationChange(sourceInput);
+        break;
+      case 'CONTRACTION_EXPANSION':
+        followupInput = metamorphicRules.applyContractionExpansion(sourceInput);
+        break;
+      case 'NUMBER_TO_WORD':
+        followupInput = metamorphicRules.applyNumberToWord(sourceInput);
+        break;
+      case 'EMOJI_REMOVAL':
+        followupInput = metamorphicRules.applyEmojiRemoval(sourceInput);
+        break;
+      case 'REPETITION':
+        followupInput = metamorphicRules.applyRepetition(sourceInput);
+        break;
+      case 'FORMAL_TO_INFORMAL':
+        followupInput = metamorphicRules.applyFormalToInformal(sourceInput);
+        break;
+      case 'ACTIVE_TO_PASSIVE':
+        followupInput = metamorphicRules.applyActiveToPassive(sourceInput);
         break;
       default:
         return res.status(400).json({ error: 'Invalid MR type' });
@@ -220,7 +386,7 @@ export const getAnalytics = async (req, res) => {
   }
 };
 
-// @desc    Get available models from config (UPDATED VERSION)
+// @desc    Get available models
 // @route   GET /api/tests/models
 export const getModels = async (req, res) => {
   try {
@@ -228,17 +394,13 @@ export const getModels = async (req, res) => {
     
     let models;
     
-    // If includeDynamic is true, use the new dynamic loading
     if (includeDynamic === 'true' || task) {
       if (task) {
-        // Get models by specific task
         models = await getModelsByTask(task, 10);
       } else {
-        // Get all models with dynamic ones
-        models = await getDynamicModels(true);  // Using renamed import
+        models = await getDynamicModels(true);
       }
     } else {
-      // Use your original static models (for backward compatibility)
       models = getAvailableModels();
     }
     
@@ -271,85 +433,5 @@ export const searchModels = async (req, res) => {
   } catch (error) {
     console.error('Search error:', error);
     res.status(500).json({ error: 'Failed to search models' });
-  }
-};
-// @desc    Get available MR types
-// @route   GET /api/tests/mr-types
-export const getMRTypes = async (req, res) => {
-  try {
-    // Static list - but easily modifiable
-    const mrTypes = [
-      { 
-        value: 'SYNONYM', 
-        label: 'Synonym Replacement', 
-        description: 'Tests semantic consistency by replacing words with synonyms',
-        icon: '🔄',
-        color: 'blue',
-        category: 'semantic'
-      },
-      { 
-        value: 'GENDER_SWAP', 
-        label: 'Gender Swap', 
-        description: 'Fairness & bias check by swapping gender-specific terms',
-        icon: '⚥',
-        color: 'purple',
-        category: 'fairness'
-      },
-      { 
-        value: 'PUNCTUATION', 
-        label: 'Punctuation Perturbation', 
-        description: 'Robustness check by modifying punctuation',
-        icon: '❗',
-        color: 'yellow',
-        category: 'robustness'
-      },
-      { 
-        value: 'NEGATION', 
-        label: 'Negation', 
-        description: 'Logical consistency by adding/removing negation',
-        icon: '🚫',
-        color: 'red',
-        category: 'logical'
-      },
-      { 
-        value: 'PARAPHRASE', 
-        label: 'Paraphrase', 
-        description: 'Semantic invariance through rephrasing',
-        icon: '📝',
-        color: 'green',
-        category: 'semantic'
-      },
-      // Naye MR types yahan add karo
-      { 
-        value: 'TENSE_CHANGE', 
-        label: 'Tense Change', 
-        description: 'Tests if model understands past/present/future tense',
-        icon: '⏰',
-        color: 'orange',
-        category: 'grammar'
-      },
-      { 
-        value: 'TYPO_CORRECTION', 
-        label: 'Typo Correction', 
-        description: 'Tests robustness to spelling mistakes',
-        icon: '✏️',
-        color: 'pink',
-        category: 'robustness'
-      }
-    ];
-    
-    // Filter by category if needed
-    const { category } = req.query;
-    let filteredTypes = mrTypes;
-    if (category) {
-      filteredTypes = mrTypes.filter(type => type.category === category);
-    }
-    
-    res.json({
-      success: true,
-      data: filteredTypes
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch MR types' });
   }
 };
